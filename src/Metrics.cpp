@@ -25,7 +25,7 @@ Metrics::Metrics()
 	acq_rate = 10;
 
 	save_folder_name = "Data";
-
+	save_file_name = "Data";
 	start_button = false;
 	stop_button = false;
 	clear_button = false;
@@ -251,4 +251,12 @@ void Metrics::reset(int acq_time_ms, int n_acqs, int curr_acq)
 	peak2_xmax = 0;
 	peak1_counts = 0;
 	peak2_counts = 0;
+}
+
+void Metrics::updateTimingMetrics(float elapsed_ms)
+{
+	time_elapsed_ms = elapsed_ms;
+	elapsed_seconds = elapsed_ms / 1000;
+	live_time = elapsed_seconds;
+	acq_rate = round((elapsed_seconds == 0) ? 0 : (total_counts / elapsed_seconds)*100)/100;
 }

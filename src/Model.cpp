@@ -49,7 +49,6 @@ void Model::handleSettingsChanged(DeviceSettings::Settings settings)
 
 void Model::updateDeviceSettings()
 {
-
 	this->device->settings->m_currentSettings = this->settings->m_currentSettings;
 }
 
@@ -62,6 +61,9 @@ void Model::onStartButtonPressed()
 			DEBUG_PRINT("Acquisition Number: " + QString::number(metrics->current_acq));
 			if (metrics->current_acq < metrics->n_acq && metrics->start_button == false)
 			{
+				QDateTime currentDateTime = QDateTime::currentDateTime();
+				QString dateTimeStr = currentDateTime.toString("yyyy-MM-dd \n hh:mm:ss");
+				this->metrics->start_time = dateTimeStr;
 				this->device->openSerialPort();
 				this->device->prepareAcquisition();
 				this->metrics->acq_status = "Running";
@@ -89,7 +91,11 @@ void Model::onStopButtonPressed()
 void Model::handleDataTimerTimeout(qint64 time_elapsed_ms)
 {
 	//settings_mutex->lock();
-	metrics->time_elapsed_ms = time_elapsed_ms;
+	this->metrics->updateTimingMetrics(time_elapsed_ms);
+	//metrics->time_elapsed_ms = time_elapsed_ms;
+	//metrics->elapsed_seconds = time_elapsed_ms / 1000;
+	//metrics->live_time = metrics->elapsed_seconds;
+	//metrics->acq_rate = metrics->total_counts / metrics->elapsed_seconds;
 	flag = false;
 
 	//if the time elapsed is greater than the preset time, 
@@ -99,7 +105,7 @@ void Model::handleDataTimerTimeout(qint64 time_elapsed_ms)
 		DEBUG_PRINT("metrics->time_elapsed_ms" << metrics->time_elapsed_ms);
 		this->current_acq += 1;
 		DEBUG_PRINT("END OF ACQUISITION");
-		DEBUG_PRINT("Time elapsed (ms): " + QString::number(metrics->time_elapsed_ms));
+		//DEBUG_PRINT("Time elapsed (ms): " + QString::number(metrics->time_elapsed_ms));
 		onAcquisitionTimeEnd();
 		//this->metrics->reset(3000,2, this->current_acq);
 		this->metrics->time_elapsed_ms = 0;
@@ -127,7 +133,7 @@ void Model::handleDataTimerTimeout(qint64 time_elapsed_ms)
 	}
 
 	emit sendDataToViewer(data_vec, *metrics);
-	DEBUG_PRINT("Time elapsed (ms): " + QString::number(metrics->time_elapsed_ms));
+	//DEBUG_PRINT("Time elapsed (ms): " + QString::number(metrics->time_elapsed_ms));
 	//DEBUG_PRINT("Real time elapsed (ms): " + QString::number(metrics->time_elapsed_ms))
 	//settings_mutex->unlock();
 }
@@ -163,7 +169,7 @@ void Model::createSaveDirectory()
 void Model::saveData()
 {
 
-	QString file_name = this->metrics->save_file_name + QString::number(metrics->current_acq) + ".csv";
+	QString file_name = this->metrics->save_file_name + QString::number((metrics->current_acq)-1) + ".csv";
 	QFile file(file_name);
 	this->createHeader();
 	file.open(QIODevice::WriteOnly | QIODevice::Text);
@@ -196,7 +202,7 @@ void Model::createHeader()
 	header += "Number of acquisitions: " + QString::number(metrics->n_acq) + "\n";
 	header += "Number of channels: " + QString::number(metrics->n_channels) + "\n";
 	header += "Total counts of samples: " + QString::number(metrics->total_counts) + "\n";
-	header += "Start time" + metrics->start_time + "\n";
+	header += "Start time: " + metrics->start_time + "\n";
 }
 
 void Model::saveFile()
@@ -277,6 +283,9 @@ void Model::handleClear() {
 	this->metrics->total_counts = 0;
 	this->metrics->acq_rate = 0;
 	//clear the data_vec and reset the metrics
-	this->saveFile();
+	//this->saveFile();
 	data_vec.fill(0);
+	QDateTime currentDateTime = QDateTime::currentDateTime();
+	QString dateTimeStr = currentDateTime.toString("yyyy-MM-dd \n hh:mm:ss");
+	this->metrics->start_time = dateTimeStr;
 }

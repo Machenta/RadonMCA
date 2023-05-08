@@ -5,6 +5,8 @@
 #include <QThread>
 //#include <QIcon>
 #include <QtGui/QIcon>
+
+
 #ifndef NDEBUG // If in debug mode
 #define DEBUG_PRINT(x) qDebug() << x
 #else // If in release mode

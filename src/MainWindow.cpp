@@ -186,8 +186,9 @@ void MainWindow::startButtonPressed()
 			acquisitionPaused = true;
 			ui->acquisition_status->setText("Running");
 			ui->acquisition_status->setStyleSheet("QLabel { background-color: rgb(164, 227, 82); }");
-			ui->acquisition_status_label->setStyleSheet("QLabel { background-color: rgb(164, 227, 82); }");
+			//ui->acquisition_status_label->setStyleSheet("QLabel { background-color: rgb(164, 227, 82); }");
 			acquisitionStatus = "Running";
+			
 		}
 	}
 	else
@@ -214,7 +215,7 @@ void MainWindow::pauseButtonPressed()
 		//DEBUG_PRINT("Timer Started");
 		ui->acquisition_status->setText("Paused");
 		ui->acquisition_status->setStyleSheet("QLabel { background-color: rgb(227, 208, 82); }");
-		ui->acquisition_status_label->setStyleSheet("QLabel { background-color: rgb(227, 208, 82); }");
+		//ui->acquisition_status_label->setStyleSheet("QLabel { background-color: rgb(227, 208, 82); }");
 		acquisitionStatus = "Paused";
 	}
 	return;
@@ -234,7 +235,7 @@ void MainWindow::resumeButtonPressed()
 		data_timer.resume();
 		ui->acquisition_status->setText("Running");
 		ui->acquisition_status->setStyleSheet("QLabel { background-color: rgb(164, 227, 82); }");
-		ui->acquisition_status_label->setStyleSheet("QLabel { background-color: rgb(164, 227, 82); }");
+		//ui->acquisition_status_label->setStyleSheet("QLabel { background-color: rgb(164, 227, 82); }");
 		//data_timer.start(1000);
 		//emit startButtonPressedSignal();
 		//DEBUG_PRINT("Timer Started");
@@ -260,7 +261,7 @@ void MainWindow::stopButtonPressed()
 				//data_timer.pause();
 				data_timer.pause();
 				ui->acquisition_status->setStyleSheet("QLabel { background-color: rgb(227, 97, 82); }");
-				ui->acquisition_status_label->setStyleSheet("QLabel { background-color: rgb(227, 97, 82); }");
+				//ui->acquisition_status_label->setStyleSheet("QLabel { background-color: rgb(227, 97, 82); }");
 				ui->acquisition_status->setText("Stopped");
 				ui->start_button->setText("Resume");
 				emit stopAcquisitionSignal();
@@ -274,7 +275,7 @@ void MainWindow::stopButtonPressed()
 				acquisitionPaused = true;
 				ui->acquisition_status->setText("Acquisition Ended");
 				ui->acquisition_status->setStyleSheet("QLabel { background-color: rgb(227, 97, 82); }");
-				ui->acquisition_status_label->setStyleSheet("QLabel { background-color: rgb(227, 97, 82); }");
+				//ui->acquisition_status_label->setStyleSheet("QLabel { background-color: rgb(227, 97, 82); }");
 				acquisitionStatus = "Stopped";
 			}
 		}
@@ -453,8 +454,9 @@ void MainWindow::updateMetricsTable()
 	ui->n_channels ->setText(QString::number(metrics->n_channels));
 	ui->n_acquisitions->setText(QString::number(metrics->n_acq));
 	ui->current_acquisition->setText(QString::number(metrics->current_acq));
-	ui->time_elapsed->setText(QString::number(metrics->elapsed_seconds));
-	ui->live_time ->setText(QString::number(metrics->live_time));
+	ui->time_elapsed->setText(QString::number(static_cast<float>(metrics->time_elapsed_ms)/1000));
+	ui->live_time ->setText(QString::number(static_cast<float>(metrics->time_elapsed_ms) / 1000));
+	//ui->live_time ->setText(QString::number(metrics->live_time));
 	ui->total_counts ->setText(QString::number(metrics->total_counts));
 	ui->count_rate->setText(QString::number(metrics->acq_rate));
 	return;
@@ -530,7 +532,10 @@ void MainWindow::stopThread()
 void MainWindow::DataTimerTimeout()
 {
 	qint64 elapsed_time = data_timer.elapsedTime();
-	DEBUG_PRINT("Elapsed time is: " << elapsed_time);
+	DEBUG_PRINT("Elapsed time (ms) is: " << elapsed_time);
+	this->metrics ->time_elapsed_ms = elapsed_time;
+	this->metrics->elapsed_seconds = elapsed_time / 1000;
+	this->metrics->live_time = elapsed_time / 1000;
 	updateMetricsTable();
 	//qint64 elapsed_time1 = data_timer.totalElapsedTime;
 	emit dataTimerTimeoutSignal(elapsed_time);
@@ -549,6 +554,7 @@ void MainWindow::handleNewDataRefreshLoop(const QVector<int> data_vec, const Met
 	//settings_mutex->lock();
 	plot_vals = data_vec;
 	this->metrics->replace(metrics);
+	DEBUG_PRINT("New data received");
 	refreshPlot();
 	updateMetricsTable();
 	//settings_mutex->unlock();

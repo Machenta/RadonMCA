@@ -72,6 +72,7 @@ class Metrics : public QObject
 		void stopAcquisition();
 		void clear();
 		void reset(int preset_time_ms, int n_acq, int curr_acq);
+		void updateTimingMetrics(float elapsed_ms);
 
 	public slots:
 		void updateData();
