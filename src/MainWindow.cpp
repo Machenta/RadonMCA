@@ -147,11 +147,13 @@ void MainWindow::launchAcquisitionSetup()
 		QString default_filename = acquisitionSettingsWindow->getDefault_filename();
 		refresh_ms = acquisitionSettingsWindow->getRefresh_ms();
 		//QString save_directory = acquisitionSettingsWindow->onSelectDirectoryButtonClicked();
-		emit acquisitionSettingsAccepted(acquisitionTime, numAcquisitions, default_filename, this->acquisitionSettingsWindow->save_dir);
+		QString save_directory = acquisitionSettingsWindow->save_dir;
+		emit acquisitionSettingsAccepted(acquisitionTime, numAcquisitions, default_filename, save_directory);
 		this->metrics->n_acq = numAcquisitions;
 		this->metrics->preset_time_ms = acquisitionTime*1000;
 		this->metrics->preset_time = acquisitionTime;
 		this->metrics->save_file_name = default_filename;
+		this->metrics->save_folder_name = save_directory;
 		getDefaultAcquisitionSettings();
 		updateMetricsTable();
 		
@@ -650,6 +652,8 @@ void MainWindow::getDefaultAcquisitionSettings()
 }
 
 
+
+
 void MainWindow::updatePlotBounds()
 {
 
@@ -697,6 +701,7 @@ void MainWindow::toggleLinLog()
 	QAbstractAxis* currentYAxis = chart->axisY();
 	QAbstractSeries* currentSeries = chart->series().first();
 
+
 	if (qobject_cast<QValueAxis*>(currentYAxis)) {
 		// If the current Y-axis is linear, replace it with a logarithmic axis
 		chart->removeAxis(currentYAxis);
@@ -705,6 +710,7 @@ void MainWindow::toggleLinLog()
 		chart->addAxis(logYAxis, Qt::AlignLeft);
 		currentSeries->attachAxis(logYAxis);
 		delete currentYAxis;
+
 	}
 	else if (qobject_cast<QLogValueAxis*>(currentYAxis)) {
 		// If the current Y-axis is logarithmic, replace it with a linear axis
@@ -715,6 +721,8 @@ void MainWindow::toggleLinLog()
 		currentSeries->attachAxis(linYAxis);
 		delete currentYAxis;
 	}
+
+
 
 	// Refresh the plot to apply the new axis settings
 	refreshPlot();

@@ -168,7 +168,10 @@ void Model::createSaveDirectory()
 
 void Model::saveData()
 {
-
+	//change the working directory to the save folder
+	QDir::setCurrent(metrics->save_folder_name);
+	//print the current working directory
+	DEBUG_PRINT("Current working directory: " + QDir::currentPath());
 	QString file_name = this->metrics->save_file_name + QString::number((metrics->current_acq)-1) + ".csv";
 	QFile file(file_name);
 	this->createHeader();
@@ -222,6 +225,7 @@ void Model::onAcquisitionSettingsAccepted(qint64 tAcq, qint64 nAcq, QString defa
 	this->metrics->n_acq = nAcq;
 	this->metrics->save_file_name = default_filename;
 	this->metrics->save_dir.setCurrent(save_directory);
+	this->metrics->save_folder_name = save_directory;
 }
 
 void Model::onDataReceivedFromSerial(const QVector<int> serial_vec)

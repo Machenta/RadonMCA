@@ -76,7 +76,8 @@ QString AcquisitionSettingsWindow::onSelectDirectoryButtonClicked()
 	//	
 	//}
 
-	//ui->directory_entry->setText(directory);
+	ui->directory_entry->setText(directory);
+	this->save_dir = directory;
 	return directory;
 }
 
