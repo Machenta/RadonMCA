@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1283</width>
-    <height>971</height>
+    <width>1189</width>
+    <height>957</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -2625,7 +2625,7 @@ background-color: rgb(255, 255, 255);</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1283</width>
+     <width>1189</width>
      <height>22</height>
     </rect>
    </property>
@@ -2642,8 +2642,15 @@ background-color: rgb(255, 255, 255);</string>
     <addaction name="actionDevice_Setup"/>
     <addaction name="actionAcquisition_Setup"/>
    </widget>
+   <widget class="QMenu" name="menuAnalysis">
+    <property name="title">
+     <string>Analysis</string>
+    </property>
+    <addaction name="actionRadon_Analysis"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuSetup"/>
+   <addaction name="menuAnalysis"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -2676,6 +2683,11 @@ background-color: rgb(255, 255, 255);</string>
   <action name="actionAcquisition_Setup">
    <property name="text">
     <string>Acquisition Setup</string>
+   </property>
+  </action>
+  <action name="actionRadon_Analysis">
+   <property name="text">
+    <string>Radon Analysis</string>
    </property>
   </action>
  </widget>

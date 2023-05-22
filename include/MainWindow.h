@@ -4,6 +4,7 @@
 #include <QtWidgets/qmessagebox.h>
 #include <QTimer> 
 #include <QThread>
+#include <QPointer>
 #include <QMutex>
 #include <QRegularExpression>
 #include <QByteArray>
@@ -23,6 +24,7 @@
 #include <QAreaSeries>
 #include <QGraphicsRectItem>
 #include <limits.h>
+#include "AnalysisWindow.h"
 
 
 class MainWindow : public QMainWindow
@@ -36,6 +38,8 @@ class MainWindow : public QMainWindow
     private:
         Ui::MainWindowClass *ui;
         AcquisitionSettingsWindow* acquisitionSettingsWindow;
+        //AnalysisWindow* analysisWindow;
+        QPointer<AnalysisWindow> analysisWindow;
         DeviceSettings* settings;
         Metrics* metrics;
         QMutex* savefile_mutex;
@@ -116,6 +120,7 @@ class MainWindow : public QMainWindow
         void getRegionBounds();
         void removeColoredRegion(QList<QAreaSeries*>& coloredRegions, QAreaSeries*& areaSeries);
         double countsWithBackgroundRemoval(int xLower, int xUpper);
+        void launchAnalysisWindow();
 
         
 

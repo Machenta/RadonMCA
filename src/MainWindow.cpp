@@ -21,6 +21,7 @@ MainWindow::MainWindow(QThread* metrics_thread, QMutex* savefile_mutex, QMutex* 
 	,metrics (new Metrics())
 	,data_timer( new PausableTimer(this))
 	,acquisitionSettingsWindow(new AcquisitionSettingsWindow(this))
+	//,analysisWindow(new AnalysisWindow(this))
 	,data_mutex(new QMutex())
 	
 
@@ -44,6 +45,7 @@ MainWindow::MainWindow(QThread* metrics_thread, QMutex* savefile_mutex, QMutex* 
 
     connect(ui->actionDevice_Setup, &QAction::triggered, this, &MainWindow::launch_DeviceSetup);
 	connect(ui->actionAcquisition_Setup, &QAction::triggered, this, &MainWindow::launchAcquisitionSetup);
+	connect(ui->actionRadon_Analysis, &QAction::triggered, this, &MainWindow::launchAnalysisWindow);
 	connect(ui->start_button, &QPushButton::clicked, this, &MainWindow::startButtonPressed);
 	connect(ui->stop_button, &QPushButton::clicked, this, &MainWindow::stopButtonPressed);
 	connect(ui->plot_min_entry, &QLineEdit::textChanged, this, &MainWindow::updatePlotBounds);
@@ -912,4 +914,13 @@ void MainWindow::updateSerialConnectionStatus(QString status)
 		serialPortStatus = "Unknown";
 	}
 }
+
+void MainWindow::launchAnalysisWindow()
+{
+	analysisWindow = new AnalysisWindow(this->metrics, this);
+	if (!analysisWindow.isNull()) {
+		analysisWindow->show();
+	}
+}
+
 
