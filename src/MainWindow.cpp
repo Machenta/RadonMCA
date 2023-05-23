@@ -670,9 +670,6 @@ void MainWindow::updatePlotBounds()
 		chart->axisX()->setRange(plotMin, plotMax);
 	}
 
-
-
-
 }
 
 /*
@@ -920,7 +917,10 @@ void MainWindow::launchAnalysisWindow()
 	analysisWindow = new AnalysisWindow(this->metrics, this);
 	if (!analysisWindow.isNull()) {
 		analysisWindow->show();
+		analysisWindow->ui->SpectrumDirectory->setText(this->metrics->save_folder_name);
+		analysisWindow->spectrumDirectory = this->metrics->save_folder_name;
 	}
 }
+
 
 

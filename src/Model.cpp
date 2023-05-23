@@ -108,13 +108,14 @@ void Model::handleDataTimerTimeout(qint64 time_elapsed_ms)
 		//DEBUG_PRINT("Time elapsed (ms): " + QString::number(metrics->time_elapsed_ms));
 		onAcquisitionTimeEnd();
 		//this->metrics->reset(3000,2, this->current_acq);
+
+		//clear the data_vec and reset the metrics
+		this->saveFile();
 		this->metrics->time_elapsed_ms = 0;
 		this->metrics->elapsed_seconds = 0;
 		this->metrics->current_acq += 1;
 		this->metrics->total_counts = 0;
 		this->metrics->acq_rate = 0;
-		//clear the data_vec and reset the metrics
-		this->saveFile();
 		data_vec.fill(0);
 		this->metrics->acq_status = "Not Running";
 		flag = true;
@@ -201,11 +202,12 @@ void Model::saveSettings()
 void Model::createHeader() 
 {
 	//create the header for each acquisition file based on the metrics of the acquisition
-	header  = "Preset time (ms): " + QString::number(metrics->preset_time_ms) + "\n";
-	header += "Number of acquisitions: " + QString::number(metrics->n_acq) + "\n";
+	header  = "Preset time (s): " + QString::number(metrics->preset_time_ms/1000) + "\n";
+	//header += "Number of acquisitions: " + QString::number(metrics->n_acq) + "\n";
 	header += "Number of channels: " + QString::number(metrics->n_channels) + "\n";
 	header += "Total counts of samples: " + QString::number(metrics->total_counts) + "\n";
 	header += "Start time: " + metrics->start_time + "\n";
+	header += "Elapsed time: " + QString::number(metrics->live_time) + "\n";
 }
 
 void Model::saveFile()

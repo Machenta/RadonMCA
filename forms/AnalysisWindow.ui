@@ -20,7 +20,7 @@
       <item row="6" column="0">
        <widget class="QTabWidget" name="tabWidget">
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="tab">
          <attribute name="title">
@@ -66,12 +66,12 @@
            </widget>
           </item>
           <item row="4" column="1" rowspan="4">
-           <layout class="QGridLayout" name="PlotRangeGrid_2" rowstretch="5,0,0" columnstretch="1,0">
+           <layout class="QGridLayout" name="PlotRangeGrid_single" rowstretch="5,0,0" columnstretch="1,0">
             <property name="sizeConstraint">
              <enum>QLayout::SetFixedSize</enum>
             </property>
             <item row="1" column="1">
-             <widget class="QLineEdit" name="plot_min_entry_2">
+             <widget class="QLineEdit" name="plot_min_entry_single">
               <property name="minimumSize">
                <size>
                 <width>50</width>
@@ -87,7 +87,7 @@
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="QLabel" name="plot_min_label_2">
+             <widget class="QLabel" name="plot_min_label_single">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -118,7 +118,7 @@
              </widget>
             </item>
             <item row="2" column="1">
-             <widget class="QLineEdit" name="plot_max_entry_2">
+             <widget class="QLineEdit" name="plot_max_entry_single">
               <property name="styleSheet">
                <string notr="true">color: rgb(0, 0, 0);</string>
               </property>
@@ -128,7 +128,7 @@
              </widget>
             </item>
             <item row="2" column="0">
-             <widget class="QLabel" name="plot_max_label_2">
+             <widget class="QLabel" name="plot_max_label_single">
               <property name="font">
                <font>
                 <pointsize>12</pointsize>
@@ -147,7 +147,7 @@
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QLabel" name="plot_range_label_2">
+             <widget class="QLabel" name="plot_range_label_single">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>1</horstretch>
@@ -193,7 +193,7 @@
            </layout>
           </item>
           <item row="4" column="3">
-           <widget class="QLabel" name="emptyspace_2">
+           <widget class="QLabel" name="emptyspace_single">
             <property name="styleSheet">
              <string notr="true">color: rgb(0, 0, 0);</string>
             </property>
@@ -203,7 +203,7 @@
            </widget>
           </item>
           <item row="4" column="4">
-           <widget class="QLabel" name="peak1_label_2">
+           <widget class="QLabel" name="peak1_label_single">
             <property name="minimumSize">
              <size>
               <width>100</width>
@@ -494,7 +494,7 @@ color: rgb(0, 0, 0);</string>
            </widget>
           </item>
           <item row="4" column="5">
-           <widget class="QLabel" name="peak2_label_2">
+           <widget class="QLabel" name="peak2_label_single">
             <property name="minimumSize">
              <size>
               <width>100</width>
@@ -742,7 +742,7 @@ color: rgb(0, 0, 0);
            </spacer>
           </item>
           <item row="5" column="3">
-           <widget class="QLabel" name="upper_bound_label_2">
+           <widget class="QLabel" name="upper_bound_label_single">
             <property name="minimumSize">
              <size>
               <width>100</width>
@@ -773,7 +773,7 @@ color: rgb(0, 0, 0);
            </widget>
           </item>
           <item row="5" column="4">
-           <widget class="QLineEdit" name="lower_peak1_2">
+           <widget class="QLineEdit" name="lower_peak1_single">
             <property name="maximumSize">
              <size>
               <width>100</width>
@@ -994,7 +994,7 @@ background-color: rgb(255, 255, 255);</string>
            </widget>
           </item>
           <item row="5" column="5">
-           <widget class="QLineEdit" name="lower_peak2_2">
+           <widget class="QLineEdit" name="lower_peak2_single">
             <property name="maximumSize">
              <size>
               <width>100</width>
@@ -1215,7 +1215,7 @@ background-color: rgb(255, 255, 255);</string>
            </widget>
           </item>
           <item row="6" column="3">
-           <widget class="QLabel" name="lower_bound_label_2">
+           <widget class="QLabel" name="lower_bound_label_single">
             <property name="maximumSize">
              <size>
               <width>150</width>
@@ -1240,7 +1240,7 @@ background-color: rgb(255, 255, 255);</string>
            </widget>
           </item>
           <item row="6" column="4">
-           <widget class="QLineEdit" name="upper_peak1_2">
+           <widget class="QLineEdit" name="upper_peak1_single">
             <property name="maximumSize">
              <size>
               <width>100</width>
@@ -1461,7 +1461,7 @@ background-color: rgb(255, 255, 255);</string>
            </widget>
           </item>
           <item row="6" column="5">
-           <widget class="QLineEdit" name="upper_peak2_2">
+           <widget class="QLineEdit" name="upper_peak2_single">
             <property name="maximumSize">
              <size>
               <width>100</width>
@@ -1682,7 +1682,7 @@ background-color: rgb(255, 255, 255);</string>
            </widget>
           </item>
           <item row="7" column="3">
-           <widget class="QLabel" name="counts_label_2">
+           <widget class="QLabel" name="counts_label_single">
             <property name="maximumSize">
              <size>
               <width>150</width>
@@ -1707,7 +1707,7 @@ background-color: rgb(255, 255, 255);</string>
            </widget>
           </item>
           <item row="7" column="4">
-           <widget class="QLabel" name="counts1_2">
+           <widget class="QLabel" name="counts1_single">
             <property name="maximumSize">
              <size>
               <width>100</width>
@@ -1732,7 +1732,7 @@ background-color: rgb(255, 255, 255);</string>
            </widget>
           </item>
           <item row="7" column="5">
-           <widget class="QLabel" name="counts2_2">
+           <widget class="QLabel" name="counts2_single">
             <property name="maximumSize">
              <size>
               <width>100</width>
@@ -1877,12 +1877,12 @@ background-color: rgb(255, 255, 255);</string>
          </attribute>
          <layout class="QGridLayout" name="gridLayout_4">
           <item row="1" column="2">
-           <layout class="QGridLayout" name="CountsGrid_2">
+           <layout class="QGridLayout" name="CountsGrid_accumulated">
             <property name="sizeConstraint">
              <enum>QLayout::SetNoConstraint</enum>
             </property>
             <item row="1" column="0">
-             <widget class="QLabel" name="upper_bound_label_3">
+             <widget class="QLabel" name="upper_bound_label_accumulated">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -1913,7 +1913,7 @@ background-color: rgb(255, 255, 255);</string>
              </widget>
             </item>
             <item row="2" column="0">
-             <widget class="QLabel" name="lower_bound_label_3">
+             <widget class="QLabel" name="lower_bound_label_accumulated">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -1944,7 +1944,7 @@ background-color: rgb(255, 255, 255);</string>
              </widget>
             </item>
             <item row="1" column="2">
-             <widget class="QLineEdit" name="lower_peak2_3">
+             <widget class="QLineEdit" name="lower_peak2_accumulated">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -2171,7 +2171,7 @@ background-color: rgb(255, 255, 255);</string>
              </widget>
             </item>
             <item row="3" column="1">
-             <widget class="QLabel" name="counts1_3">
+             <widget class="QLabel" name="counts1_accumulated">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -2202,7 +2202,7 @@ background-color: rgb(255, 255, 255);</string>
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QLabel" name="peak1_label_3">
+             <widget class="QLabel" name="peak1_label_accumulated">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -2493,7 +2493,7 @@ color: rgb(0, 0, 0);</string>
              </widget>
             </item>
             <item row="2" column="1">
-             <widget class="QLineEdit" name="upper_peak1_3">
+             <widget class="QLineEdit" name="upper_peak1_accumulated">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -2720,7 +2720,7 @@ background-color: rgb(255, 255, 255);</string>
              </widget>
             </item>
             <item row="3" column="2">
-             <widget class="QLabel" name="counts2_3">
+             <widget class="QLabel" name="counts2_accumulated">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -2751,7 +2751,7 @@ background-color: rgb(255, 255, 255);</string>
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="QLineEdit" name="lower_peak1_3">
+             <widget class="QLineEdit" name="lower_peak1_accumulated">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -2978,7 +2978,7 @@ background-color: rgb(255, 255, 255);</string>
              </widget>
             </item>
             <item row="2" column="2">
-             <widget class="QLineEdit" name="upper_peak2_3">
+             <widget class="QLineEdit" name="upper_peak2_accumulated">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -3205,7 +3205,7 @@ background-color: rgb(255, 255, 255);</string>
              </widget>
             </item>
             <item row="0" column="0">
-             <widget class="QLabel" name="emptyspace_3">
+             <widget class="QLabel" name="emptyspace_accumulated">
               <property name="styleSheet">
                <string notr="true">color: rgb(0, 0, 0);</string>
               </property>
@@ -3215,7 +3215,7 @@ background-color: rgb(255, 255, 255);</string>
              </widget>
             </item>
             <item row="0" column="2">
-             <widget class="QLabel" name="peak2_label_3">
+             <widget class="QLabel" name="peak2_label_accumulated">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -3450,7 +3450,7 @@ color: rgb(0, 0, 0);
              </widget>
             </item>
             <item row="3" column="0">
-             <widget class="QLabel" name="counts_label_3">
+             <widget class="QLabel" name="counts_label_accumulated">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -3503,12 +3503,12 @@ color: rgb(0, 0, 0);
            </widget>
           </item>
           <item row="1" column="0">
-           <layout class="QGridLayout" name="PlotRangeGrid_3" rowstretch="4,0,0" columnstretch="0,0">
+           <layout class="QGridLayout" name="PlotRangeGrid_accumulated" rowstretch="4,0,0" columnstretch="0,0">
             <property name="sizeConstraint">
              <enum>QLayout::SetMinAndMaxSize</enum>
             </property>
             <item row="1" column="1">
-             <widget class="QLineEdit" name="plot_min_entry_3">
+             <widget class="QLineEdit" name="plot_min_entry_accumulated">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -3530,7 +3530,7 @@ color: rgb(0, 0, 0);
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="QLabel" name="plot_min_label_3">
+             <widget class="QLabel" name="plot_min_label_accumulated">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -3561,7 +3561,7 @@ color: rgb(0, 0, 0);
              </widget>
             </item>
             <item row="2" column="1">
-             <widget class="QLineEdit" name="plot_max_entry_3">
+             <widget class="QLineEdit" name="plot_max_entry_accumulated">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -3583,7 +3583,7 @@ color: rgb(0, 0, 0);
              </widget>
             </item>
             <item row="2" column="0">
-             <widget class="QLabel" name="plot_max_label_3">
+             <widget class="QLabel" name="plot_max_label_accumulated">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>

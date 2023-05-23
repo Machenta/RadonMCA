@@ -98,8 +98,8 @@
     <QtMoc Include="include\MainWindow.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="include\AnalysisWindow.cpp" />
     <ClCompile Include="src\acquisitionsettingswindow.cpp" />
+    <ClCompile Include="src\AnalysisWindow.cpp" />
     <ClCompile Include="src\Device.cpp" />
     <ClCompile Include="src\devicesettings.cpp" />
     <ClCompile Include="src\IntegerAxis.cpp" />

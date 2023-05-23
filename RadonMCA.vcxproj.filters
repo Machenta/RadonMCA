@@ -79,7 +79,7 @@
     <ClCompile Include="src\PausableTimer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="include\AnalysisWindow.cpp">
+    <ClCompile Include="src\AnalysisWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
