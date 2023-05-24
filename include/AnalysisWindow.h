@@ -12,6 +12,8 @@
 #include <QRegularExpression>
 #include "ui_AnalysisWindow.h"
 #include "Metrics.h"
+#include <sstream>
+#include <algorithm>
 
 namespace Ui {
     class AnalysisWindow;
@@ -31,6 +33,7 @@ class AnalysisWindow : public QMainWindow
     QChartView* AccumulatedChartView;
     QVector<QLineSeries*> spectrumData;
     QVector<QVector<int> > SpectrumVec;
+    QVector<QString> fileNames;
     QVector<QVector<QString> > InformationVec;
     QLinearGradient gradient;
     QLayout *layout;
@@ -43,6 +46,11 @@ class AnalysisWindow : public QMainWindow
     qint64 upperValue1;
     qint64 lowerValue2;
     qint64 upperValue2;
+    double backgroundActivity;
+    double halfLife;
+    double volume;
+    double counts1;
+    double counts2;
 
     qint64 lowerValue1Accumulated;
     qint64 upperValue1Accumulated;
@@ -86,6 +94,9 @@ class AnalysisWindow : public QMainWindow
         double countsWithBackgroundRemoval(int xLower, int xUpper, QLineSeries* series);
         QLineSeries* findLineSeries(const QList<QAbstractSeries*>& seriesList);
         void getRegionBoundsAccumulated();
+        void loadAcquisitionInformation(QVector<QString> infoVec);
+        void getCalculationVariables();
+        void calculateActivity();
 
 };      
 

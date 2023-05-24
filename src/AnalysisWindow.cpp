@@ -37,10 +37,15 @@ AnalysisWindow::AnalysisWindow(Metrics* metrics, QWidget* parent) :
     connect(ui->lower_peak2_accumulated, &QLineEdit::textChanged, this, &AnalysisWindow::getRegionBoundsAccumulated);
     connect(ui->upper_peak2_accumulated, &QLineEdit::textChanged, this, &AnalysisWindow::getRegionBoundsAccumulated);
 
+    connect(ui->background_activity, &QLineEdit::textChanged, this, &AnalysisWindow::getCalculationVariables);
+    connect(ui->half_life, &QLineEdit::textChanged, this, &AnalysisWindow::getCalculationVariables);
+    connect(ui->volume_entry, &QLineEdit::textChanged, this, &AnalysisWindow::getCalculationVariables);
+    
+    connect(ui->actionLoad_Spectrums, &QAction::triggered, this, &AnalysisWindow::onSelectDirectoryButtonClicked);
 
     //fill accumulatedSpectrum with zeros
     accumulatedSpectrum.reserve(1024);
-    for (int i = 0; i < 1024; i++) {
+    for (int i = 0; i <= 1024; i++) {
 		accumulatedSpectrum.push_back(0);
 	}
 
@@ -60,6 +65,13 @@ AnalysisWindow::AnalysisWindow(Metrics* metrics, QWidget* parent) :
     areaSeries2 = new QAreaSeries();
     areaSeries1Accmulated = new QAreaSeries();
     areaSeries2Accmulated = new QAreaSeries();
+
+    backgroundActivity = 0;
+    halfLife = 0;
+    volume = 1;
+    counts1 = 0;
+    counts2 = 0;
+
 
 }
 
@@ -84,8 +96,8 @@ void AnalysisWindow::onSelectDirectoryButtonClicked()
 
     ui->SpectrumList->clear();
     
-    for (const QFileInfo& fileInfo : spectrumFiles)
-        ui->SpectrumList->addItem(fileInfo.fileName());
+    //for (const QFileInfo& fileInfo : spectrumFiles)
+    //    ui->SpectrumList->addItem(fileInfo.fileName());
 
     //get the number of spectrums
     int numSpectrums = spectrumFiles.size();
@@ -111,20 +123,33 @@ void AnalysisWindow::onSelectDirectoryButtonClicked()
 
 void AnalysisWindow::loadSpectrums()
 {
-    QDirIterator it(spectrumDirectory, filters, QDir::Files, QDirIterator::Subdirectories);
+    QDir dir(spectrumDirectory);
+    QFileInfoList fileInfoList = dir.entryInfoList(filters, QDir::Files, QDir::NoSort);
+
+    // Custom sort comparator
+    std::sort(fileInfoList.begin(), fileInfoList.end(), [](const QFileInfo& a, const QFileInfo& b) {
+        // Extract the number part of the file name
+        int numA = a.baseName().mid(4).toInt();  // Assuming file name always starts with "Data"
+        int numB = b.baseName().mid(4).toInt();
+        return numA < numB;
+        });
+
     int fileIndex = 0; // File index for corresponding QLineSeries
-    QVector <int> pointVec;
+    QVector<int> pointVec;
     pointVec.reserve(1024);
     for (int i = 0; i < 1024; ++i) {
-		pointVec.push_back(0);
-	}
+        pointVec.push_back(0);
+    }
 
-
-    while (it.hasNext())
+    for (const QFileInfo& fileInfo : fileInfoList)
     {
-        QString filename = it.next();
+        QString filename = fileInfo.absoluteFilePath();
+        //get only the filename and not the whole path and add it to the list
+        QFileInfo fileInfo(filename);
+        ui->SpectrumList->addItem(fileInfo.fileName());
+        fileNames.push_back(fileInfo.fileName());
+        //print the filename to the console
         QFile file(filename);
-        QRegularExpression regex("\\d+");
         if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
             continue;
         //expand the InformationVec to hold the information for the new spectrum
@@ -138,8 +163,6 @@ void AnalysisWindow::loadSpectrums()
             bool ok;
             double value = line.toDouble(&ok);
 
-
-
             if (ok)
             {
                 // add the number to the spectrumData vector
@@ -149,27 +172,13 @@ void AnalysisWindow::loadSpectrums()
             }
             else
             {
-                
-                QRegularExpressionMatch match = regex.match(line);
-                
-                if (match.hasMatch()) {
-                    QString numberString = match.captured(0);
-                    int number = numberString.toInt();
-                    InformationVec[fileIndex][j] = line;
-                    j++;
-                }
-                else {
-                    j++;
-                }
-
-                
+                InformationVec[fileIndex][j] = line;
+                j++;
             }
-
         }
         file.close();
         fileIndex++; // Increment file index for next QLineSeries
         SpectrumVec.push_back(pointVec);
-
     }
     //qDebug() << "SpectrumVec size: " << SpectrumVec.size();
 
@@ -178,8 +187,10 @@ void AnalysisWindow::loadSpectrums()
     ui->SpectrumSliderSelector->setEnabled(true);
 }
 
+
 void AnalysisWindow::displaySpectrum(int pos)
 {
+
     // Create a new chart
     QChart* chart = new QChart();
 
@@ -187,6 +198,7 @@ void AnalysisWindow::displaySpectrum(int pos)
     QGradient gradient;
     gradient.setColorAt(0, QColor(255, 0, 0));
     gradient.setColorAt(1, QColor(0, 0, 255));
+    
     //Set the axis labels
     chart->createDefaultAxes();
     //chart->axisX()->setTitleText("ADC Reading");
@@ -214,6 +226,8 @@ void AnalysisWindow::displaySpectrum(int pos)
     //ui->SpectrumDisplay->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     ui->SpectrumDisplay->layout()->addWidget(chartView);
 
+    chartView->chart()->legend()->hide();
+    chartView->chart()->setTitle("Spectrum for the file: " + fileNames[pos]);
     // Show the chart view
     chartView->show();
 }
@@ -222,7 +236,7 @@ void AnalysisWindow::displayAccumulatedSpectrum()
 {
     //sum all of the spectrums
     QLineSeries* AccumulatedSeries = new QLineSeries();
-
+    
     //create a series from the accumulated spectrum
     for (int i = 0; i < 1024; ++i) {
         AccumulatedSeries->append(i, accumulatedSpectrum[i]);
@@ -230,6 +244,7 @@ void AnalysisWindow::displayAccumulatedSpectrum()
 
     // Create a new chart
     QChart* AccumulatedChart = new QChart();
+    
     // Add the series to the chart
     AccumulatedChart->addSeries(AccumulatedSeries);
     // Create default axes
@@ -248,6 +263,7 @@ void AnalysisWindow::displayAccumulatedSpectrum()
     ui->AccumulatedDisplay->layout()->addWidget(AccumulatedChartView);
 
     // Show the chart view
+    AccumulatedChartView->chart()->legend()->hide();
     AccumulatedChartView->show();
 }
 
@@ -278,6 +294,7 @@ void AnalysisWindow::displayCurrentSpectrumNumber(int value)
 {
     ui->CurrentSpectrum->setText(QString::number(value));
     displaySpectrum(value);
+    loadAcquisitionInformation(InformationVec[value]);
 }
 
 void AnalysisWindow::updatePlotRangeSingle()
@@ -408,14 +425,19 @@ double AnalysisWindow::countsWithBackgroundRemoval(int xLower, int xUpper, QLine
             upperPoint = point;
         }
     }
-
+    //qDebug() << "Limits chosen: " << xLower << " - " << xUpper;
     // Calculate the slope and intercept for linear background removal
     double deltaX = upperPoint.x() - lowerPoint.x();
+    //qDebug() << "Delta X: " << deltaX;
     double deltaY = upperPoint.y() - lowerPoint.y();
+    //qDebug() << "Delta Y: " << deltaY;
     double slope = deltaY / deltaX;
     double intercept = lowerPoint.y() - slope * lowerPoint.x();
-
-    // Iterate over the data points and accumulate the counts with background removal
+    double background = (slope/2) * (upperPoint.x() * upperPoint.x() - lowerPoint.x() * lowerPoint.x()) + intercept * deltaX;
+    //qDebug() << "Slope: " << slope;
+    //qDebug() << "Intercept: " << intercept;
+    //qDebug() << "Background: " << background;
+    // Iterate over the data points and accumulate the counts 
     for (const QPointF& point : dataPoints)
     {
         int x = static_cast<int>(point.x());
@@ -423,14 +445,14 @@ double AnalysisWindow::countsWithBackgroundRemoval(int xLower, int xUpper, QLine
 
         if (x >= xLower && x <= xUpper)
         {
-            double background = slope * x + intercept;
-            double correctedY = y - background;
-            totalCounts += correctedY;
-            qDebug() << "x: " << x << " y: " << y << " background: " << background << " correctedY: " << correctedY;
-            qDebug() << "slope: " << slope << " intercept: " << intercept;
-            qDebug() << "totalCounts: " << totalCounts;
+            totalCounts += y;
+            qDebug() << "Counts: " << y;
+            qDebug() << "Point: " << x << " - " << y;
         }
     }
+    //total counts are the counts under the line minus the background
+    totalCounts -= background;
+    qDebug() << "Total counts: " << totalCounts;
 
     return totalCounts;
 }
@@ -456,8 +478,8 @@ void AnalysisWindow::getRegionBoundsAccumulated() {
     lowerValue2Accumulated = ui->lower_peak2_accumulated->text().toInt(&ok3);
     upperValue2Accumulated = ui->upper_peak2_accumulated->text().toInt(&ok4);
 
-    double counts1 = countsWithBackgroundRemoval(lowerValue1Accumulated, upperValue1Accumulated, findLineSeries(AccumulatedChartView->chart()->series()));
-    double counts2 = countsWithBackgroundRemoval(lowerValue2Accumulated, upperValue2Accumulated, findLineSeries(AccumulatedChartView->chart()->series()));
+    counts1 = countsWithBackgroundRemoval(lowerValue1Accumulated, upperValue1Accumulated, findLineSeries(AccumulatedChartView->chart()->series()));
+    counts2 = countsWithBackgroundRemoval(lowerValue2Accumulated, upperValue2Accumulated, findLineSeries(AccumulatedChartView->chart()->series()));
 
     region1Color = QColor(247, 213, 149, 100);
     region2Color = QColor(171, 219, 227, 100);
@@ -479,6 +501,15 @@ void AnalysisWindow::getRegionBoundsAccumulated() {
         removeColoredRegion(coloredRegions2Accmulated, areaSeries2Accmulated);
         ui->counts2_accumulated->setText("---");
     }
+
+    //check if the user has selected a region and it they have, calculate activity
+    if (ok1 && ok2 || ok3 && ok4) {
+		//calculate activity
+		calculateActivity();
+	}
+    else {
+	
+	}
 }
 
 void AnalysisWindow::updateColoredRegionAccumulated(qreal a, qreal b, QColor color, QList<QAreaSeries*>& regionsList, QAreaSeries*& areaSeriesToUpdate)
@@ -512,4 +543,83 @@ void AnalysisWindow::updateColoredRegionAccumulated(qreal a, qreal b, QColor col
 
     // Add the new region to the list
     regionsList.append(areaSeriesToUpdate);
+}
+
+void AnalysisWindow::loadAcquisitionInformation(QVector<QString> infoVec)
+{
+
+    // QVector to store the extracted information
+    QVector<QString> extractedInfo;
+
+    QRegularExpression regex(":\\s*(.*)");
+
+    for (int i = 0; i < infoVec.size(); ++i) {
+        QString line = infoVec.at(i); // Explicitly defining line as QString
+        QRegularExpressionMatch match = regex.match(infoVec[i]);
+        if (match.hasMatch()) {
+            QString info = match.captured(1).trimmed();
+            extractedInfo.push_back(info);
+        }
+    }
+
+    // Print the extracted information
+    for (const auto& info : extractedInfo) {
+        qDebug() << "Extracted info: " << info;
+    }
+
+    ui->preset_time_label->setText(extractedInfo[0]);
+    ui->elapsed_time_label->setText(extractedInfo[5]);
+    ui->total_counts_label->setText(extractedInfo[2]);
+    ui->start_time_label->setText(extractedInfo[3]);
+
+}
+
+void AnalysisWindow::getCalculationVariables()
+{
+    bool activityOk, halfLifeOk,volumeOk;
+    //get the values from the text boxes that will be used for the calculations
+    backgroundActivity = ui->background_activity->text().toDouble(&activityOk);
+    halfLife = ui->half_life->text().toDouble(&halfLifeOk);
+    volume = ui->volume_entry->text().toDouble(&volumeOk);
+
+    if (activityOk && halfLifeOk && volumeOk) {
+		qDebug() << "Activity: " << backgroundActivity;
+		qDebug() << "Half Life: " << halfLife;
+		qDebug() << "Volume: " << volume;
+        if (volume != 0) {
+            calculateActivity();
+        }
+            
+	}
+    else {
+		qDebug() << "Error: Could not convert to double";
+	}
+    
+}
+
+void AnalysisWindow::calculateActivity()
+{
+	//calculate the activity while making sure that the values are not nan or it does not divide by zero
+
+    double activity1 = (halfLife * counts1) / volume - backgroundActivity;
+    qDebug() << "Activity 1: " << activity1;
+    double activity2 = (halfLife * counts2) / volume - backgroundActivity;
+    qDebug() << "Activity 2: " << activity2;
+
+	//display the activity if it's not nan
+    if (std::isnan(activity1)) {
+		ui->peak1_activity->setText("0");
+	}
+    else {
+        ui->peak1_activity->setText(QString::number(activity1));
+    }
+
+
+    if (std::isnan(activity2)) {
+        ui->peak2_activity->setText("0");
+    }
+    else {
+		ui->peak2_activity->setText(QString::number(activity1));
+	}
+	
 }

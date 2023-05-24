@@ -387,56 +387,6 @@ void MainWindow::setupPlot()
 	//updateColoredRegion(100, 200);
 }
 
-//void MainWindow::setupPlot()
-//{
-//	//setting up the plot
-//	gradient.setColorAt(0, QColor(255, 0, 0));
-//	gradient.setColorAt(1, QColor(0, 0, 255));
-//	series->setBrush(gradient);
-//	chart->addSeries(series);
-//	//Set the axis labels
-//	chart->createDefaultAxes();
-//	chart->axisX()->setTitleText("ADC Reading");
-//	chart->axisY()->setTitleText("Number of Occurences");
-//
-//	//set the range of the axis
-//	chart->axisX()->setRange(0, 1024);
-//	auto max_iter = std::max_element(plot_vals.begin(), plot_vals.end());
-//	int max_value = *max_iter;
-//	chart->axisY()->setRange(0, 1.3 * max_value + 20);
-//
-//	// Set label format for integer values
-//	auto valueAxisX = qobject_cast<QValueAxis*>(chart->axisX());
-//	auto valueAxisY = qobject_cast<QValueAxis*>(chart->axisY());
-//	if (valueAxisX) {
-//		valueAxisX->setLabelFormat("%i");
-//	}
-//	if (valueAxisY) {
-//		valueAxisY->setLabelFormat("%i");
-//	}
-//
-//	// Create a QChartView and set the chart to it
-//	QChartView* chartView = new QChartView(chart);
-//	chartView->setRenderHint(QPainter::Antialiasing);
-//
-//	// Add the QChartView to the layout
-//	layout->addWidget(chartView);
-//
-//	// Set the layout to the PlotdrawWidget
-//	ui->PlotdrawWidget->setLayout(layout);
-//
-//	cursorLine = new QLineSeries();
-//	QPen pen(Qt::red, 1, Qt::DashLine);
-//	cursorLine->setPen(pen);
-//	chart->addSeries(cursorLine);
-//	cursorLine->attachAxis(chart->axisX());
-//	cursorLine->attachAxis(chart->axisY());
-//	chart->legend()->hide();
-//	//updateColoredRegion(100, 200);
-//}
-
-
-
 /*
 * @brief: update the metrics table with the new calculated metrics
 * 
@@ -863,14 +813,19 @@ double MainWindow::countsWithBackgroundRemoval(int xLower, int xUpper)
 			upperPoint = point;
 		}
 	}
-
+	//qDebug() << "Limits chosen: " << xLower << " - " << xUpper;
 	// Calculate the slope and intercept for linear background removal
 	double deltaX = upperPoint.x() - lowerPoint.x();
+	//qDebug() << "Delta X: " << deltaX;
 	double deltaY = upperPoint.y() - lowerPoint.y();
+	//qDebug() << "Delta Y: " << deltaY;
 	double slope = deltaY / deltaX;
 	double intercept = lowerPoint.y() - slope * lowerPoint.x();
-
-	// Iterate over the data points and accumulate the counts with background removal
+	double background = (slope / 2) * (upperPoint.x() * upperPoint.x() - lowerPoint.x() * lowerPoint.x()) + intercept * deltaX;
+	//qDebug() << "Slope: " << slope;
+	//qDebug() << "Intercept: " << intercept;
+	//qDebug() << "Background: " << background;
+	// Iterate over the data points and accumulate the counts 
 	for (const QPointF& point : dataPoints)
 	{
 		int x = static_cast<int>(point.x());
@@ -878,11 +833,14 @@ double MainWindow::countsWithBackgroundRemoval(int xLower, int xUpper)
 
 		if (x >= xLower && x <= xUpper)
 		{
-			double background = slope * x + intercept;
-			double correctedY = y - background;
-			totalCounts += correctedY;
+			totalCounts += y;
+			qDebug() << "Counts: " << y;
+			qDebug() << "Point: " << x << " - " << y;
 		}
 	}
+	//total counts are the counts under the line minus the background
+	totalCounts -= background;
+	qDebug() << "Total counts: " << totalCounts;
 
 	return totalCounts;
 }
