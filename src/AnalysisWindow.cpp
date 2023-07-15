@@ -88,16 +88,11 @@ void AnalysisWindow::onSelectDirectoryButtonClicked()
     qDebug() << "Directory that contains the spectrums: " << this->metrics->save_folder_name;
     //change the current working directory to the directory that contains the spectrums
     QDir::setCurrent(spectrumDirectory);
-
     QDir dir(spectrumDirectory);
-    filters << "*.csv";
     dir.setNameFilters(filters);
     spectrumFiles = dir.entryInfoList();
 
     ui->SpectrumList->clear();
-    
-    //for (const QFileInfo& fileInfo : spectrumFiles)
-    //    ui->SpectrumList->addItem(fileInfo.fileName());
 
     //get the number of spectrums
     int numSpectrums = spectrumFiles.size();
@@ -120,18 +115,28 @@ void AnalysisWindow::onSelectDirectoryButtonClicked()
     displayAccumulatedSpectrum();
 }
 
-
+/*
+* @brief: Loads the individual spectrums from the directory that was chosen
+* 	   and stores them in the spectrumData vector for display.
+*/
 void AnalysisWindow::loadSpectrums()
 {
     QDir dir(spectrumDirectory);
     QFileInfoList fileInfoList = dir.entryInfoList(filters, QDir::Files, QDir::NoSort);
 
-    // Custom sort comparator
+    // Custom sort comparator to import the diles based on the proper order
     std::sort(fileInfoList.begin(), fileInfoList.end(), [](const QFileInfo& a, const QFileInfo& b) {
-        // Extract the number part of the file name
-        int numA = a.baseName().mid(4).toInt();  // Assuming file name always starts with "Data"
-        int numB = b.baseName().mid(4).toInt();
-        return numA < numB;
+        QRegularExpression re("\\d+");
+        QRegularExpressionMatch matchA = re.match(a.baseName());
+        QRegularExpressionMatch matchB = re.match(b.baseName());
+        // If the file name contains a number, use that number for comparison;
+        // otherwise, use the entire file name.
+        if (matchA.hasMatch() && matchB.hasMatch()) {
+            return matchA.captured(0).toInt() < matchB.captured(0).toInt();
+        }
+        else {
+            return a.baseName() < b.baseName();
+        }
         });
 
     int fileIndex = 0; // File index for corresponding QLineSeries
@@ -178,6 +183,7 @@ void AnalysisWindow::loadSpectrums()
         }
         file.close();
         fileIndex++; // Increment file index for next QLineSeries
+        //add the retrieved spectrum to the vector of spectrums
         SpectrumVec.push_back(pointVec);
     }
     //qDebug() << "SpectrumVec size: " << SpectrumVec.size();
@@ -190,7 +196,6 @@ void AnalysisWindow::loadSpectrums()
 
 void AnalysisWindow::displaySpectrum(int pos)
 {
-
     // Create a new chart
     QChart* chart = new QChart();
 
@@ -215,7 +220,9 @@ void AnalysisWindow::displaySpectrum(int pos)
     // Create default axes
     chart->createDefaultAxes();
     ui->SpectrumDisplay->layout()->removeWidget(chartView);
-    // Create a new chart view with the chart
+    // change the chartview to display the new chart without creating a new chartview
+    //chartView->setChart(chart);
+
     chartView = new QChartView(chart, ui->SpectrumDisplay);
 
     // Set the chart view to fill the SpectrumDisplay widget
@@ -273,15 +280,9 @@ void AnalysisWindow::accumulateSpectrums()
 
     for (int i = 0; i < spectrumData.size(); ++i) {
         for (int j = 0; j < 1024; ++j) {
-            if (SpectrumVec[i][j]!=0) {
-                //qDebug() << "Found non-zero y value at " << i << "," << j << ": " << spectrumData[i]->at(j).y();
-                //accumulatedSpectrum[j] += spectrumData[i]->at(j).y();
-            }
-            //accumulatedSpectrum[j] += spectrumData[i]->at(j).y();
             accumulatedSpectrum[j] += SpectrumVec[i][j];
         }
     }
-    qDebug() << "accumulated spectrum size: " << spectrumData.size();
 }
 
 void AnalysisWindow::createSpectrumLineSeries() 
@@ -600,7 +601,6 @@ void AnalysisWindow::getCalculationVariables()
 void AnalysisWindow::calculateActivity()
 {
 	//calculate the activity while making sure that the values are not nan or it does not divide by zero
-
     double activity1 = (halfLife * counts1) / volume - backgroundActivity;
     qDebug() << "Activity 1: " << activity1;
     double activity2 = (halfLife * counts2) / volume - backgroundActivity;
